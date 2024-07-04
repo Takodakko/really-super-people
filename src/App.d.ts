@@ -1,5 +1,5 @@
 interface CharacterStats {
-    name: string;
+    name: setNames;
     displayName: string;
     maxHp: number;
     hp: number;
@@ -19,9 +19,12 @@ interface CharacterStats {
 
   type BothCharacterStats = Record<playerNumbers, CharacterStats>
 
+  type setNames = 'crow' | 'blue_jay';
+
   export {
     CharacterStats,
     playerNumbers,
     BothCharacterStats,
     playerTypes,
+    setNames,
   }

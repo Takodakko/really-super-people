@@ -8,8 +8,8 @@
   const character1: CharacterStats = {
     name: 'crow',
     displayName: 'Crow',
-    hp: 20,
-    maxHp: 20,
+    hp: 40,
+    maxHp: 40,
     type: 'rock',
     str: 9,
     def: 7,
@@ -23,8 +23,8 @@
   const character2: CharacterStats = {
     name: 'blue_jay',
     displayName: 'Blue Jay',
-    hp: 16,
-    maxHp: 16,
+    hp: 36,
+    maxHp: 36,
     type: 'paper',
     str: 10,
     def: 5,
@@ -50,6 +50,9 @@
       flashMessage(`${bothCharacterStats.value.player1.displayName} loses!`);
       flashMessage(`Too bad for ${bothCharacterStats.value.player1.displayName}!`);
       gameOver.value = true;
+      setTimeout(() => {
+        characterOneClass.value = 'red-text';
+      }, 2000);
     }
   });
   
@@ -59,6 +62,10 @@
       flashMessage(`${bothCharacterStats.value.player2.displayName} loses!`);
       flashMessage(`Too bad for ${bothCharacterStats.value.player2.displayName}!`);
       gameOver.value = true;
+      setTimeout(() => {
+        characterTwoClass.value = 'red-text';
+      }, 2000);
+      
     }
   });
 
@@ -112,9 +119,31 @@
     const attackAmount = attacker.str - defender.def + bonus + advantage >= 0 ? attacker.str - defender.def + bonus + advantage : 0;
     if (hit) {
       flashMessage(`Hit for ${attackAmount} damage!`);
+      if (attackerNumber === 'player1') {
+        characterTwoClass.value = 'character-was-hit';
+        setTimeout(() => {
+          characterTwoClass.value = '';
+        }, 500);
+      } else if (attackerNumber === 'player2') {
+        characterOneClass.value = 'character-was-hit';
+        setTimeout(() => {
+          characterOneClass.value = '';
+        }, 500);
+      }
       defender.hp = defender.hp - attackAmount;
     } else {
       flashMessage('Missed!');
+      if (attackerNumber === 'player1') {
+        characterTwoClass.value = 'character-dodged';
+        setTimeout(() => {
+          characterTwoClass.value = '';
+        }, 500);
+      } else if (attackerNumber === 'player2') {
+        characterOneClass.value = 'character-dodged';
+        setTimeout(() => {
+          characterOneClass.value = '';
+        }, 500);
+      }
       return;
     }
     if (player1isAttacker) {
@@ -173,18 +202,22 @@
       calculateHeal(whichOne);
     }
   }
+
+  const characterOneClass = ref('');
+  const characterTwoClass = ref('');
 </script>
 
 <template>
-  
-  <div class="character-match">
-    <Character :stats="bothCharacterStats.player1" :can-click="!gameOver && player1Turn" @attack="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player1')" @heal="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player1')"/><br>
-    <Character :stats="bothCharacterStats.player2" :can-click="!gameOver && player2Turn" @attack="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player2')" @heal="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player2')"/><br>
-  </div>
-  
-  <MessageDisplay :msg="msg" /><br>
-    
   <CharacterCreator v-if="creationView"/>
+  <div v-else>
+    <div class="character-match">
+      <Character :class="characterOneClass" :stats="bothCharacterStats.player1" :can-click="!gameOver && player1Turn" @attack="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player1')" @heal="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player1')"/><br>
+      <Character :class="characterTwoClass" :stats="bothCharacterStats.player2" :can-click="!gameOver && player2Turn" @attack="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player2')" @heal="(actionType: string, displayName: string) => actionTaken(actionType, displayName, 'player2')"/><br>
+    </div>
+  
+    <MessageDisplay :msg="msg" /><br>
+ </div>
+  
 </template>
 
 <style scoped>
@@ -192,4 +225,36 @@
     display: flex;
     flex-direction: row;
   }
+  .character-was-hit {
+  animation: shake 0.5s;
+  animation-iteration-count: 3;
+  }
+  .character-dodged {
+    animation: 4s linear 0s infinite alternate rise;
+    animation-iteration-count: 1;
+  }
+  .red-text {
+    color: red;
+  }
+  @keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+@keyframes rise {
+  from {
+    transform: translateY(110vh);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
 </style>

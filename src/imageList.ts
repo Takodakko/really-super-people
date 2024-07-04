@@ -1,9 +1,16 @@
 import crow from './assets/crow.png';
 import blue_jay from './assets/blue_jay.png';
+import type { setNames } from './App.d.ts';
 
-export default {
+const imageList: Record<setNames, string> = {
     crow: crow,
     blue_jay: blue_jay,
-} as {
-    [key: string]: string;
-}
+};
+export default imageList;
+// export default {
+//     crow: crow,
+//     blue_jay: blue_jay,
+// } as {
+//     //[key: setNames]: string;
+    
+// }
